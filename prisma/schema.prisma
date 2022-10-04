@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  email        String   @unique
+  activated    Boolean
+  name         String
+  password     String
+  resumes      Resume[]
+  refreshToken String?
+  photoURL     String?
+  admin        Boolean?
+}
+
+model Resume {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  staticURL String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
+
+  fullName      String
+  bornDate      DateTime
+  email         String
+  phone         String
+  maritalStatus String
+  linkedin      String?
+  cep           String?
+  address       String?
+  district      String
+  city          String
+  state         String
+  number        Int?
+  purpose       String
+  cvPhotoURL    String?
+
+  cidNumber              Int?
+  deficiencyLevel        String?
+  haveCertificate        Boolean?
+  addaptationDescription String?
+  limitationDescription  String?
+  aditionalInformation   String?
+
+  professionalExperiences ProfessionalExperiences[]
+  schoolEducation         SchoolEducation[]
+  aditionalCourses        AditionalCourses[]
+  ability                 Ability[]
+}
+
+model ProfessionalExperiences {
+  id            Int       @id @default(autoincrement())
+  businessName  String
+  position      String
+  nowExperience Boolean
+  startDate     DateTime
+  endDate       DateTime?
+  description   String
+  Resume        Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resumeId      Int
+}
+
+model SchoolEducation {
+  id          Int       @id @default(autoincrement())
+  position    String
+  schoolName  String
+  course      String
+  nowCoursing Boolean
+  startDate   DateTime
+  endDate     DateTime?
+  Resume      Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resumeId    Int
+}
+
+model AditionalCourses {
+  id          Int       @id @default(autoincrement())
+  courseName  String
+  schoolName  String
+  level       String
+  totalTime   String
+  nowCoursing Boolean
+  startDate   DateTime
+  endDate     DateTime?
+
+  Resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resumeId Int
+}
+
+model Ability {
+  id    Int    @id @default(autoincrement())
+  name  String
+  level String
+
+  Resume   Resume? @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resumeId Int?
+}
