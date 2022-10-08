@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 
@@ -46,10 +47,19 @@ export class CvsService {
       throw new UnauthorizedException('Você não tem permissão!');
     }
 
-    const filePath = path.join(__dirname, 'templates', `${theme}.ejs`);
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'src',
+      'cvs',
+      'templates',
+      `${theme}.ejs`,
+    );
 
     ejs.renderFile(filePath, { resume }, (err, html) => {
       if (err) {
+        Logger.log(err);
         throw new ConflictException('Erro na leitura do arquivo!');
       }
 

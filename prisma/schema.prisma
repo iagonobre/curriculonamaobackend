@@ -33,18 +33,18 @@ model Resume {
   authorId  Int?
 
   fullName      String
-  bornDate      DateTime
+  bornDate      String
   email         String
   phone         String
-  maritalStatus String
+  maritalStatus String?
   linkedin      String?
   cep           String?
   address       String?
   district      String
   city          String
-  state         String
+  state         String?
   number        Int?
-  purpose       String
+  purpose       String?
   cvPhotoURL    String?
 
   cidNumber              Int?
@@ -61,38 +61,38 @@ model Resume {
 }
 
 model ProfessionalExperiences {
-  id            Int       @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   businessName  String
   position      String
   nowExperience Boolean
-  startDate     DateTime
-  endDate       DateTime?
+  startDate     String
+  endDate       String?
   description   String
-  Resume        Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  Resume        Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   resumeId      Int
 }
 
 model SchoolEducation {
-  id          Int       @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   position    String
   schoolName  String
   course      String
   nowCoursing Boolean
-  startDate   DateTime
-  endDate     DateTime?
-  Resume      Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  startDate   String
+  endDate     String?
+  Resume      Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   resumeId    Int
 }
 
 model AditionalCourses {
-  id          Int       @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   courseName  String
   schoolName  String
   level       String
   totalTime   String
   nowCoursing Boolean
-  startDate   DateTime
-  endDate     DateTime?
+  startDate   String
+  endDate     String?
 
   Resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   resumeId Int

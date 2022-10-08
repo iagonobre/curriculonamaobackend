@@ -10,7 +10,7 @@
 <style>
   * {margin: 0; padding: 0; font-family: sans-serif;}
 
-  #body { width: 100%}
+  #body {width: 100%}
 
   #header, #profissional, #academico, #curso, #deficiencia {margin-bottom: 12px;}
 
@@ -25,9 +25,9 @@
       <h2><%= resume.fullName %></h2>
       <p><%= resume.district %> | <%= resume.city %> | <%= resume.state %></p>
       <p><%= resume.number ? resume.number : null %><%= resume.email %></p>
-      <p>Data de nascimento | Estado civil</p>
-      <p>LinkedIn (opcional) | Deficiência física (opcional)</p>
-      <p><strong>OBJETIVO:</strong>Escreva qual o seu cargo ou área de interesse</p>
+      <p><%= resume.bornDate.to %> | <%= resume.maritalStatus %></p>
+      <p><%= resume.linkedin ?? null %></p>
+      <p><strong><%= resume.purpose ? 'OBJETIVO' : null %></strong><%= resume.purpose ?? null %></p>
     </div>
     
     <div id="profissional">

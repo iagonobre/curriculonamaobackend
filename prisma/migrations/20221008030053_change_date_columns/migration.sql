@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "AditionalCourses" ALTER COLUMN "startDate" SET DATA TYPE TEXT,
+ALTER COLUMN "endDate" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "ProfessionalExperiences" ALTER COLUMN "startDate" SET DATA TYPE TEXT,
+ALTER COLUMN "endDate" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Resume" ALTER COLUMN "bornDate" SET DATA TYPE TEXT,
+ALTER COLUMN "purpose" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "SchoolEducation" ALTER COLUMN "startDate" SET DATA TYPE TEXT,
+ALTER COLUMN "endDate" SET DATA TYPE TEXT;
