@@ -2,6 +2,7 @@
 /dist
 /node_modules
 /public/images
+yarn.lock
 
 # Logs
 logs
@@ -12,6 +13,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+docker-compose
 .env
 
 # OS
