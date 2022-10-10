@@ -15,7 +15,7 @@ import {
 
 import * as path from 'path';
 import * as ejs from 'ejs';
-import * as pdf from 'html-pdf';
+import { generatePdf } from 'html-pdf-node-ts/lib';
 
 @Injectable()
 export class CvsService {
@@ -78,27 +78,18 @@ export class CvsService {
         `${resume.id}-${resume.authorId}.pdf`,
       );
 
-      pdf
-        .create(html, {
-          height: '11.25in',
-          width: '8.5in',
-          header: {
-            height: '20mm',
-          },
-          border: {
-            left: '10mm',
-            right: '10mm',
-          },
-          phantomPath: './node-modules/phantomjs-prebuil/bin/phantomjs',
-          footer: {
-            height: '20mm',
-          },
-        })
-        .toFile(base, (err) => {
-          if (err) {
-            throw new ConflictException('Erro ao gerar arquivo!');
-          }
-        });
+      const file = { content: html };
+
+      generatePdf(file, {
+        format: 'A4',
+        path: base,
+        margin: {
+          top: 40,
+          bottom: 40,
+          left: 40,
+          right: 40,
+        },
+      });
     });
 
     return { uri: `/cv/${resume.id}-${resume.authorId}.pdf` };
