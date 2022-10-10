@@ -89,6 +89,7 @@ export class CvsService {
             left: '10mm',
             right: '10mm',
           },
+          phantomPath: './node-modules/phantomjs-prebuil/bin/phantomjs',
           footer: {
             height: '20mm',
           },
