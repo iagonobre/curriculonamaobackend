@@ -92,7 +92,6 @@ export class CvsService {
           footer: {
             height: '20mm',
           },
-          phantomPath: './node_modules/phantomjs/bin/phantomjs',
         })
         .toFile(base, (err) => {
           if (err) {
