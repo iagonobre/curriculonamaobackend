@@ -13,7 +13,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-docker-compose
+docker-compose.yml
 .env
 
 # OS
