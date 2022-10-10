@@ -10,7 +10,9 @@
 <style>
   * {margin: 0; padding: 0; font-family: sans-serif;}
 
-  #body {width: 100%}
+  #body {
+    width: 100%;
+  }
 
   #header, #profissional, #academico, #curso, #deficiencia {margin-bottom: 12px;}
 
@@ -25,44 +27,64 @@
       <h2><%= resume.fullName %></h2>
       <p><%= resume.district %> | <%= resume.city %> | <%= resume.state %></p>
       <p><%= resume.number ? resume.number : null %><%= resume.email %></p>
-      <p><%= resume.bornDate.to %> | <%= resume.maritalStatus %></p>
-      <p><%= resume.linkedin ?? null %></p>
-      <p><strong><%= resume.purpose ? 'OBJETIVO' : null %></strong><%= resume.purpose ?? null %></p>
+      <p><%= `${Math.floor((new Date() - new Date(resume.bornDate).getTime()) / 3.15576e+10)} anos`%> | <%= resume.maritalStatus %></p>
+      <p><%= resume.linkedin ? resume.linkeding : null %></p>
+      <p><strong><%= resume.purpose ? `Objetivo: ${resume.purpose}` : null %></strong></p>
     </div>
     
-    <div id="profissional">
-      <h3>EXPERIÊNCIA PROFISSIONAL:</h3>
-      <hr>
-      <p>Cargo/Posição</p>
-      <p>Nome da empresa - início e término</p>
-      <p>Descrição das atividades exercidas</p>
-    </div>
+    <% if (resume.professionalExperiences?.length > 0 ) { %>
+      <div id="profissional">
+        <h3>EXPERIÊNCIA PROFISSIONAL:</h3>
+        <hr>
+          <% resume.professionalExperiences.forEach(experience => { %>
+          <p><%= experience.businessName %> </p>
+          <p><strong>Cargo: </strong><%= `${experience.position}` %></p>
+          <p><strong>Período: </strong><%= `${((new Date(experience.startDate).getDate() )) + "/" + ((new Date(experience.startDate).getMonth() + 1)) + "/" + new Date(experience.startDate).getFullYear()}` %> - <%= experience.nowExperience && experience.endDate ? `${((new Date(experience.endDate.getDate() )) + "/" + ((new Date(experience.endDate).getMonth() + 1)) + "/" + new Date(experience.endDate).getFullYear())}` : `Atualmente`%></p>
+          <p><%= experience.description ? experience.description : null %></p>
+          <br/>
+        <% }) %>
+      </div>
+    <% } %>
 
-    <div id="academico">
-      <h3>FORMAÇÃO ACADÊMICA:</h3>
-      <hr>
-      <p>Nome da Instituição</p>
-      <p>Início e término</p>
-      <p>Nome do curso e/ou nível acadêmico</p>
-    </div>
+    <% if (resume.schoolEducation?.length > 0 ) { %>
+      <div id="academico">
+        <h3>FORMAÇÃO ACADÊMICA:</h3>
+        <hr>
+          <% resume.schoolEducation.forEach(formacao => { %>
+          <p><%= formacao.schoolName %></p>
+          <p><strong>Curso: </strong><%= `${formacao.course}` %> | <%= `Nível: ${formacao.posicao}` %> </p>
+          <p><strong>Período: </strong><%= `${((new Date(formacao.startDate).getDate() )) + "/" + ((new Date(formacao.startDate).getMonth() + 1)) + "/" + new Date(formacao.startDate).getFullYear()}` %> - <%= formacao.nowCoursing && formacao.endDate ? `${((new Date(formacao.endDate.getDate() )) + "/" + ((new Date(formacao.endDate).getMonth() + 1)) + "/" + new Date(formacao.endDate).getFullYear())}` : `Atualmente`%></p>
+          <br/>
+        <% }); %>
+      </div>
+    <% } %>
+    
+    <% if (resume.aditionalCourses?.length > 0 ) { %>
+      <div id="curso">
+        <h3>CURSOS DE APERFEIÇOAMENTO E ÁREAS DE EXPERIÊNCIA:</h3>
+        <hr>  
+        <% resume.aditionalCourses.forEach (cursoextra => { %>
+          <p><%= cursoextra.schoolName %></p>
+          <p><strong>Curso: </strong><%= `${cursoextra.courseName}` %> | <%= `Nível: ${cursoextra.level}` %></p>
+          <p><strong>Período: </strong><%= `${((new Date(cursoextra.startDate).getDate() )) + "/" + ((new Date(cursoextra.startDate).getMonth() + 1)) + "/" + new Date(cursoextra.startDate).getFullYear()}` %> - <%= cursoextra.nowCoursing && cursoextra.endDate ? `${((new Date(cursoextra.endDate.getDate() )) + "/" + ((new Date(cursoextra.endDate).getMonth() + 1)) + "/" + new Date(cursoextra.endDate).getFullYear())}` : `Atualmente`%></p>
+          <br/>
+        <% }); %>
+      </div>
+    <% } %>
+    
 
-    <div id="curso">
-      <h3>CURSOS DE APERFEIÇOAMENTO E ÁREAS DE EXPERIÊNCIA:</h3>
-      <hr>
-      <p>Nome da Instituição</p>
-      <p>Nível de conhecimento</p>
-      <p>Curso</p>
-    </div>
+    <% if (resume.cidNumber) { %>
+      <div id="deficiencia">
+        <h3>INFORMAÇÕES SOBRE A DEFICIÊNCIA:</h3>
+        <hr>
+        <p><%= resume.cidNumber ? `Número CID: ${resume.cidNumber}` : null %></p>
+        <p><%= resume.deficiencyLevel ? resume.deficiencyLevel : null %></p>
+        <p><%= resume.haveCertificate ? `Possuí certificado médico? Sim` : `Possuí certificado médico? Não` %></p>
+        <p><%= resume.addaptationDescription ? resume.addaptationDescription : null%></p>
+        <p><%= resume.limitationDescription ? resume.limitationDescription : null%></p>
 
-    <div id="deficiencia">
-      <h3>INFORMAÇÕES SOBRE A DEFICIÊNCIA:</h3>
-      <hr>
-      <p>Número de CID:</p>
-      <p>Grau de deficiência:</p>
-      <p>Laudo médico ou certificado INSS (válido ou inválido):</p>
-      <p>Equipamento ou adaptações necessárias:</p>
-      <p>Limitações cotidianas:</p>
-    </div>
+      </div>
+    <% } %>
 
   </div>
 </body>

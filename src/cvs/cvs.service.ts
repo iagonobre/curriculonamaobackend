@@ -41,6 +41,13 @@ export class CvsService {
       where: {
         id: cvID,
       },
+      include: {
+        ability: true,
+        aditionalCourses: true,
+        professionalExperiences: true,
+        schoolEducation: true,
+        author: true,
+      },
     });
 
     if (resume.authorId !== userAuthor.id) {
@@ -77,6 +84,10 @@ export class CvsService {
           width: '8.5in',
           header: {
             height: '20mm',
+          },
+          border: {
+            left: '10mm',
+            right: '10mm',
           },
           footer: {
             height: '20mm',
