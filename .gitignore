@@ -16,6 +16,8 @@ lerna-debug.log*
 docker-compose.yml
 .env
 
+data
+
 # OS
 .DS_Store
 

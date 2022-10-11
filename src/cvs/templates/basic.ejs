@@ -72,6 +72,17 @@
       </div>
     <% } %>
     
+    <% if (resume.ability?.length > 0 ) { %>
+      <div id="curso">
+        <h3>HABILIDADES:</h3>
+        <hr>  
+        <% resume.ability.forEach (ability => { %>
+          <p><%= ability.name %></p>
+          <p><%= `Nível: ${ability.name}` %></p>
+          <br/>
+        <% }); %>
+      </div>
+    <% } %>
 
     <% if (resume.cidNumber) { %>
       <div id="deficiencia">
