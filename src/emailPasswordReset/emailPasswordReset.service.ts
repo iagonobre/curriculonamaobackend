@@ -31,7 +31,7 @@ export class EmailPasswordResetService {
 
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_RESET_PASSWORD_TOKEN_SECRET,
-      expiresIn: 60 * 1, // 1 hour,
+      expiresIn: 60 * 60, // 1 hour,
     });
 
     const url = `${process.env.EMAIL_CONFIRMATION_URL}/recovery/activate?token=${token}`;

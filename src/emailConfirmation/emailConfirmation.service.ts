@@ -27,7 +27,7 @@ export class EmailConfirmationService {
 
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
-      expiresIn: 60 * 1, // 1 hour,
+      expiresIn: 60 * 60, // 1 hour,
     });
 
     const url = `${

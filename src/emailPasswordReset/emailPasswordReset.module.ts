@@ -13,7 +13,7 @@ import { EmailPasswordResetService } from './emailPasswordReset.service';
     JwtModule.register({
       secret: process.env.JWT_RESET_PASSWORD_TOKEN_SECRET,
       signOptions: {
-        expiresIn: '3600s',
+        expiresIn: '1h',
       },
     }),
   ],
