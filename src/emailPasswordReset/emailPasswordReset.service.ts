@@ -26,8 +26,18 @@ export class EmailPasswordResetService {
     private prisma: PrismaService,
   ) {}
 
-  public sendResetPasswordLink(email: string) {
+  public async sendResetPasswordLink(email: string) {
     const payload = { sub: email };
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Não existe nenhuma conta vinculada a este e-mail.',
+      );
+    }
 
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_RESET_PASSWORD_TOKEN_SECRET,
