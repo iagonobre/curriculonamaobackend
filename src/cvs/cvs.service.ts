@@ -4,18 +4,15 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { Resume } from '@prisma/client';
-
 import {
   CreateCurriculumDTO,
   GenerateCurriculumDTO,
 } from 'src/dtos/CurriculumDTO';
-
 import * as path from 'path';
 import * as ejs from 'ejs';
-import { generatePdf } from 'html-pdf-node-ts/lib';
+import * as pdf from 'html-pdf';
 
 @Injectable()
 export class CvsService {
@@ -26,9 +23,7 @@ export class CvsService {
     payload: string,
   ): Promise<{ uri: string }> {
     const userAuthor = await this.prisma.user.findUnique({
-      where: {
-        email: payload,
-      },
+      where: { email: payload },
     });
 
     if (!userAuthor) {
@@ -38,9 +33,7 @@ export class CvsService {
     }
 
     const resume = await this.prisma.resume.findUnique({
-      where: {
-        id: cvID,
-      },
+      where: { id: cvID },
       include: {
         ability: true,
         aditionalCourses: true,
@@ -49,6 +42,10 @@ export class CvsService {
         author: true,
       },
     });
+
+    if (!resume) {
+      throw new ConflictException('Currículo não encontrado!');
+    }
 
     if (resume.authorId !== userAuthor.id) {
       throw new UnauthorizedException('Você não tem permissão!');
@@ -64,54 +61,59 @@ export class CvsService {
       `${theme}.ejs`,
     );
 
-    ejs.renderFile(filePath, { resume }, (err, html) => {
-      if (err) {
-        Logger.log(err);
-        throw new ConflictException('Erro na leitura do arquivo!');
-      }
+    const base = path.join(
+      __dirname,
+      '..',
+      '..',
+      'public',
+      `${resume.id}-${resume.authorId}.pdf`,
+    );
 
-      const base = path.join(
-        __dirname,
-        '..',
-        '..',
-        'public',
-        `${resume.id}-${resume.authorId}.pdf`,
-      );
+    try {
+      const html = await ejs.renderFile(filePath, { resume });
 
-      const file = { content: html };
-
-      generatePdf(file, {
+      const options = {
         format: 'A4',
-        path: base,
-        margin: {
-          top: 40,
-          bottom: 40,
-          left: 40,
-          right: 40,
+        border: {
+          top: '40px',
+          bottom: '40px',
+          left: '40px',
+          right: '40px',
         },
-      });
-    });
+        path: base,
+      };
 
-    return { uri: `/cv/${resume.id}-${resume.authorId}.pdf` };
+      await new Promise<void>((resolve, reject) => {
+        pdf.create(html, options).toFile((err) => {
+          if (err) {
+            Logger.error(err);
+            reject(new ConflictException('Erro ao gerar PDF!'));
+          } else {
+            resolve();
+          }
+        });
+      });
+
+      return { uri: `/cv/${resume.id}-${resume.authorId}.pdf` };
+    } catch (err) {
+      Logger.error(err);
+      throw new ConflictException('Erro na geração do currículo!');
+    }
   }
 
   async listCurriculum(payload: string) {
     const userAuthor = await this.prisma.user.findUnique({
-      where: {
-        email: payload,
-      },
+      where: { email: payload },
     });
 
     if (!userAuthor) {
       throw new UnauthorizedException(
-        'Somente um usuário válido pode criar um currículo!',
+        'Somente um usuário válido pode listar os currículos!',
       );
     }
 
-    const resumes = await this.prisma.resume.findMany({
-      where: {
-        authorId: userAuthor.id,
-      },
+    return this.prisma.resume.findMany({
+      where: { authorId: userAuthor.id },
       include: {
         ability: true,
         aditionalCourses: true,
@@ -120,15 +122,11 @@ export class CvsService {
         author: true,
       },
     });
-
-    return resumes;
   }
 
   async deleteCurriculum(id: number, payload: string): Promise<Resume> {
     const userAuthor = await this.prisma.user.findUnique({
-      where: {
-        email: payload,
-      },
+      where: { email: payload },
     });
 
     if (!userAuthor) {
@@ -137,12 +135,8 @@ export class CvsService {
       );
     }
 
-    const idNumber = Number(id);
-
     const resume = await this.prisma.resume.findUnique({
-      where: {
-        id: idNumber,
-      },
+      where: { id },
     });
 
     if (!resume) {
@@ -153,15 +147,13 @@ export class CvsService {
       throw new UnauthorizedException('Você só pode deletar seus currículos!');
     }
 
-    const resumeDeleted = await this.prisma.resume.delete({
-      where: { id: resume.id },
-    });
+    const deleted = await this.prisma.resume.delete({ where: { id } });
 
-    if (!resumeDeleted) {
+    if (!deleted) {
       throw new ConflictException('Não foi possível deletar o currículo!');
     }
 
-    return resumeDeleted;
+    return deleted;
   }
 
   async createCurriculum(
@@ -174,9 +166,7 @@ export class CvsService {
     payload: string,
   ): Promise<Resume> {
     const userAuthor = await this.prisma.user.findUnique({
-      where: {
-        email: payload,
-      },
+      where: { email: payload },
     });
 
     if (!userAuthor) {
@@ -188,21 +178,9 @@ export class CvsService {
     const createdResume = await this.prisma.resume.create({
       data: {
         ...resume,
-        ability: {
-          createMany: {
-            data: ability,
-          },
-        },
-        professionalExperiences: {
-          createMany: {
-            data: professionalExperiences,
-          },
-        },
-        aditionalCourses: {
-          createMany: {
-            data: aditionalCourses,
-          },
-        },
+        ability: { createMany: { data: ability } },
+        professionalExperiences: { createMany: { data: professionalExperiences } },
+        aditionalCourses: { createMany: { data: aditionalCourses } },
       },
       include: {
         ability: true,
@@ -214,21 +192,11 @@ export class CvsService {
     });
 
     await this.prisma.user.update({
-      where: {
-        email: payload,
-      },
+      where: { email: payload },
       data: {
-        resumes: {
-          connect: {
-            id: createdResume.id,
-          },
-        },
+        resumes: { connect: { id: createdResume.id } },
       },
     });
-
-    if (!createdResume) {
-      throw new ConflictException('Não foi possível criar o currículo!');
-    }
 
     return createdResume;
   }

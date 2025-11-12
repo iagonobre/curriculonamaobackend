@@ -7,7 +7,7 @@ import {
 
 import { User } from '@prisma/client';
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as fs from 'fs';
 import { join } from 'path';
 

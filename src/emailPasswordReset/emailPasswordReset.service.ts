@@ -13,7 +13,7 @@ import { User } from '@prisma/client';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 import Handlebars from 'handlebars';
 import { ResetPasswordUserDTO } from 'src/dtos/UserDTO';
