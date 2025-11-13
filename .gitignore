@@ -14,7 +14,6 @@ yarn-error.log*
 lerna-debug.log*
 
 docker-compose.yml
-.env
 
 data
 
@@ -35,8 +34,8 @@ data
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+config.bat
