@@ -73,7 +73,7 @@ export class CvsService {
       const html = await ejs.renderFile(filePath, { resume });
 
       const options = {
-        format: 'A4',
+        format: 'A4' as const,
         border: {
           top: '40px',
           bottom: '40px',
@@ -179,7 +179,9 @@ export class CvsService {
       data: {
         ...resume,
         ability: { createMany: { data: ability } },
-        professionalExperiences: { createMany: { data: professionalExperiences } },
+        professionalExperiences: {
+          createMany: { data: professionalExperiences },
+        },
         aditionalCourses: { createMany: { data: aditionalCourses } },
       },
       include: {
