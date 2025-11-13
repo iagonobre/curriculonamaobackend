@@ -12,7 +12,7 @@ import {
 } from 'src/dtos/CurriculumDTO';
 import * as path from 'path';
 import * as ejs from 'ejs';
-import * as pdf from 'html-pdf';
+import * as html_to_pdf from 'html-pdf-node';
 
 @Injectable()
 export class CvsService {
@@ -26,11 +26,10 @@ export class CvsService {
       where: { email: payload },
     });
 
-    if (!userAuthor) {
+    if (!userAuthor)
       throw new UnauthorizedException(
         'Somente um usuário válido pode criar um currículo!',
       );
-    }
 
     const resume = await this.prisma.resume.findUnique({
       where: { id: cvID },
@@ -43,13 +42,10 @@ export class CvsService {
       },
     });
 
-    if (!resume) {
-      throw new ConflictException('Currículo não encontrado!');
-    }
+    if (!resume) throw new ConflictException('Currículo não encontrado!');
 
-    if (resume.authorId !== userAuthor.id) {
+    if (resume.authorId !== userAuthor.id)
       throw new UnauthorizedException('Você não tem permissão!');
-    }
 
     const filePath = path.join(
       __dirname,
@@ -61,7 +57,7 @@ export class CvsService {
       `${theme}.ejs`,
     );
 
-    const base = path.join(
+    const outputPath = path.join(
       __dirname,
       '..',
       '..',
@@ -72,32 +68,30 @@ export class CvsService {
     try {
       const html = await ejs.renderFile(filePath, { resume });
 
-      const options = {
-        format: 'A4' as const,
-        border: {
+      const file = { content: html };
+
+      // Caminho do Chromium (necessário no Ubuntu)
+      process.env.PUPPETEER_EXECUTABLE_PATH =
+        process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser';
+
+      const options: html_to_pdf.CreateOptions = {
+        format: 'A4',
+        path: outputPath,
+        margin: {
           top: '40px',
           bottom: '40px',
           left: '40px',
           right: '40px',
         },
-        path: base,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'], // <- ESSENCIAL
       };
 
-      await new Promise<void>((resolve, reject) => {
-        pdf.create(html, options).toFile((err) => {
-          if (err) {
-            Logger.error(err);
-            reject(new ConflictException('Erro ao gerar PDF!'));
-          } else {
-            resolve();
-          }
-        });
-      });
+      await html_to_pdf.generatePdf(file, options);
 
       return { uri: `/cv/${resume.id}-${resume.authorId}.pdf` };
     } catch (err) {
       Logger.error(err);
-      throw new ConflictException('Erro na geração do currículo!');
+      throw new ConflictException('Erro ao gerar PDF!');
     }
   }
 
