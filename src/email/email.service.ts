@@ -5,16 +5,19 @@ import * as Mail from 'nodemailer/lib/mailer';
 @Injectable()
 export class EmailService {
   async sendMail(options: Mail.Options) {
-    const nodemailerTransport = createTransport({
-      host: 'smtp.sendgrid.net',
-      port: 465,
+    const transporter = createTransport({
+      host: process.env.MAIL_HOST,
+      port: Number(process.env.MAIL_PORT),
       secure: true,
       auth: {
-        user: 'apikey',
-        pass: process.env.SENDGRID_API_KEY,
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
 
-    return nodemailerTransport.sendMail(options);
+    return transporter.sendMail({
+      from: `"Currículo na Mão" <${process.env.MAIL_USER}>`,
+      ...options,
+    });
   }
 }
